@@ -24,7 +24,7 @@ A modern Netflix-inspired web application that displays currently playing movies
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/Naman-S-Sondhiya/Netflix-flask-clone.git
    cd Netflix
    ```
 
@@ -33,7 +33,7 @@ A modern Netflix-inspired web application that displays currently playing movies
    pip3 install -r requirements.txt
    ```
 
-3. **Set up your API key** **required manually, provide your actual API key**
+3. **Set up your API key** **required create a TMDB account and acquire the TMDB API key, & provide your actual API key**
    ```bash
    # Create a .env file (not tracked by git)
    echo "TMDB_API_KEY=your_actual_api_key_here" > .env
