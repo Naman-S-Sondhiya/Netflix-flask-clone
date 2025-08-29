@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #141414;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.4;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(45deg, rgba(20, 20, 20, 0.7) 0%, rgba(20, 20, 20, 0.9) 100%),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23222"/><path d="M20,20 L80,20 L80,80 L20,80 Z" fill="%23333" opacity="0.3"/><path d="M30,30 L70,30 L70,70 L30,70 Z" fill="%23444" opacity="0.2"/></svg>');
+            background-size: cover;
+            background-position: center;
+            z-index: -2;
+            pointer-events: none;
+        }
+        
+        .movie-collage-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+            pointer-events: none;
+            background-image: 
+                linear-gradient(45deg, rgba(229, 9, 20, 0.1) 0%, transparent 50%),
+                repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(255, 255, 255, 0.05) 20px, rgba(255, 255, 255, 0.05) 21px);
+        }
+        
+        .header {
+            padding: 20px 4%;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: linear-gradient(to bottom, #141414 0%, transparent 100%);
+        }
+        
+        .logo {
+            color: #e50914;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        
+        .hero {
+            height: 80vh;
+            background: 
+                linear-gradient(to top, #141414 0%, transparent 60%),
+                linear-gradient(to right, #141414 0%, transparent 40%),
+                linear-gradient(135deg, rgba(229, 9, 20, 0.2) 0%, transparent 50%);
+            display: flex;
+            align-items: center;
+            padding: 0 4%;
+            margin-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(229, 9, 20, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 0, 0, 0.3) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #fff, #e50914);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 10px rgba(229, 9, 20, 0.3);
+        }
+        
+        .hero-content p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 500px;
+            margin-bottom: 2rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .cta-button {
+            background: #e50914;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
+        }
+        
+        .cta-button:hover {
+            background: #b8070f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(229, 9, 20, 0.6);
+        }
+        
+        .movies-section {
+            padding: 2rem 4%;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #e50914;
+        }
+        
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .movie-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: block;
+            border-radius: 12px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #222, #333);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+        
+        .movie-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(229, 9, 20, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+        }
+        
+        .movie-card:hover {
+            transform: scale(1.1) translateY(-8px);
+            box-shadow: 0 12px 30px rgba(229, 9, 20, 0.3);
+            z-index: 10;
+        }
+        
+        .movie-card:hover::before {
+            opacity: 1;
+        }
+        
+        .movie-card:active {
+            transform: scale(1.06) translateY(-4px);
+        }
+        
+        .movie-poster {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            border-radius: 4px;
+            background: #222;
+        }
+        
+        .movie-info {
+            margin-top: 0.5rem;
+        }
+        
+        .movie-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .movie-rating {
+            font-size: 0.8rem;
+            color: #ffd700;
+            margin-top: 0.2rem;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .pagination button {
+            background: #e50914;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s ease;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            background: #b8070f;
+        }
+        
+        .pagination button:disabled {
+            background: #333;
+            cursor: not-allowed;
+        }
+        
+        .page-info {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+    </style>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Smooth scroll for CTA button
+            const ctaButton = document.querySelector('.cta-button');
+            if (ctaButton) {
+                ctaButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            }
+            
+            // Add subtle animation to movie cards on load
+            const movieCards = document.querySelectorAll('.movie-card');
+            movieCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="movie-collage-bg"></div>
+    
+    <header class="header">
+        <a href="/" class="logo">NETFLIX</a>
+    </header>
+    
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Now Playing</h1>
+            <p>Discover the latest blockbuster movies currently in theaters worldwide</p>
+            <a href="#movies-grid" class="cta-button">Browse Movies</a>
+        </div>
+    </section>
+    
+    <section class="movies-section">
+        <h2 class="section-title">Featured Movies</h2>
+        
+        <div id="movies-grid" class="movies-grid">
+            {% for movie in movies %}
+            <a href="/movie/{{ movie.id }}" class="movie-card" style="text-decoration: none; color: inherit;">
+                {% if movie.poster_path %}
+                <img src="{{ image_base_url }}{{ movie.poster_path }}" alt="{{ movie.title }}" class="movie-poster">
+                {% else %}
+                <div class="movie-poster" style="display: flex; align-items: center; justify-content: center; color: #999; font-size: 0.8rem;">
+                    No Image
+                </div>
+                {% endif %}
+                <div class="movie-info">
+                    <div class="movie-title">{{ movie.title }}</div>
+                    <div class="movie-rating">⭐ {{ "%.1f"|format(movie.vote_average) }}</div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        
+        {% if total_pages > 1 %}
+        <div class="pagination">
+            {% if page > 1 %}
+            <button onclick="window.location.href='/?page={{ page - 1 }}'">← Previous</button>
+            {% else %}
+            <button disabled>← Previous</button>
+            {% endif %}
+            
+            <span class="page-info">Page {{ page }} of {{ total_pages }}</span>
+            
+            {% if page < total_pages %}
+            <button onclick="window.location.href='/?page={{ page + 1 }}'">Next →</button>
+            {% else %}
+            <button disabled>Next →</button>
+            {% endif %}
+        </div>
+        {% endif %}
+    </section>
+</body>
+</html>
