@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Netflix</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>New & Popular - Netflix</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             background: #141414;
             color: #fff;
@@ -19,7 +19,7 @@
             position: relative;
             overflow-x: hidden;
         }
-        
+
         body::before {
             content: '';
             position: fixed;
@@ -27,7 +27,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
+            background:
                 linear-gradient(45deg, rgba(20, 20, 20, 0.7) 0%, rgba(20, 20, 20, 0.9) 100%),
                 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23222"/><path d="M20,20 L80,20 L80,80 L20,80 Z" fill="%23333" opacity="0.3"/><path d="M30,30 L70,30 L70,70 L30,70 Z" fill="%23444" opacity="0.2"/></svg>');
             background-size: cover;
@@ -35,7 +35,7 @@
             z-index: -2;
             pointer-events: none;
         }
-        
+
         .movie-collage-bg {
             position: fixed;
             top: 0;
@@ -45,11 +45,11 @@
             z-index: -1;
             opacity: 0.15;
             pointer-events: none;
-            background-image: 
+            background-image:
                 linear-gradient(45deg, rgba(229, 9, 20, 0.1) 0%, transparent 50%),
                 repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(255, 255, 255, 0.05) 20px, rgba(255, 255, 255, 0.05) 21px);
         }
-        
+
         .header {
             padding: 0 4%;
             position: fixed;
@@ -208,13 +208,13 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             font-weight: 500;
         }
-        
+
         .hero {
-            height: 85vh;
+            height: 60vh;
             background:
                 linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, transparent 30%),
                 linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 50%),
-                url('https://images.unsplash.com/photo-1489599735734-79b4d4b8c5e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover;
+                url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover;
             display: flex;
             align-items: center;
             padding: 0 4%;
@@ -241,7 +241,7 @@
         }
 
         .hero-content h1 {
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: 900;
             margin-bottom: 1rem;
             color: #fff;
@@ -250,35 +250,14 @@
         }
 
         .hero-content p {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             opacity: 0.9;
             margin-bottom: 2rem;
             color: #fff;
             line-height: 1.4;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
         }
-        
-        .cta-button {
-            background: #e50914;
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 4px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
-        }
-        
-        .cta-button:hover {
-            background: #b8070f;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(229, 9, 20, 0.6);
-        }
-        
+
         .movies-section {
             padding: 3rem 4% 2rem;
         }
@@ -451,39 +430,28 @@
             color: #ccc;
         }
 
-        .continue-card {
-            position: relative;
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
         }
 
-        .continue-progress {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.3);
-            z-index: 2;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: #e50914;
-            border-radius: 2px;
-        }
-
-        .new-badge {
-            background: #e50914;
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             color: #fff;
-            padding: 0.2rem 0.5rem;
-            border-radius: 3px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
         }
 
-        .section-title em {
-            color: #e50914;
-            font-style: normal;
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #e50914;
+            border-color: #e50914;
         }
 
         .footer {
@@ -563,42 +531,13 @@
                 align-items: center;
                 text-align: center;
             }
-        }
-        
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-        
-        .pagination button {
-            background: #e50914;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background 0.2s ease;
-        }
-        
-        .pagination button:hover:not(:disabled) {
-            background: #b8070f;
-        }
-        
-        .pagination button:disabled {
-            background: #333;
-            cursor: not-allowed;
-        }
-        
-        .page-info {
-            font-size: 0.9rem;
-            opacity: 0.8;
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
         }
     </style>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Header scroll effect
@@ -611,26 +550,19 @@
                 }
             });
 
-            // Smooth scroll for CTA button
-            const ctaButton = document.querySelector('.cta-button');
-            if (ctaButton) {
-                ctaButton.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
+            // Filter buttons functionality
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
                 });
-            }
+            });
 
             // Movie card hover effects
             const movieCards = document.querySelectorAll('.movie-card');
             movieCards.forEach(card => {
                 card.addEventListener('mouseenter', function() {
-                    // Pause other cards' animations when hovering
                     movieCards.forEach(otherCard => {
                         if (otherCard !== card) {
                             otherCard.style.transition = 'all 0.3s ease';
@@ -639,7 +571,6 @@
                 });
 
                 card.addEventListener('mouseleave', function() {
-                    // Reset transitions
                     movieCards.forEach(otherCard => {
                         otherCard.style.transition = 'all 0.3s ease';
                     });
@@ -674,19 +605,19 @@
 </head>
 <body>
     <div class="movie-collage-bg"></div>
-    
+
     <header class="header">
         <a href="/" class="logo">NETFLIX</a>
         <div class="nav-container">
-            <nav class="nav-links">
-                <a href="/" class="nav-link active">Home</a>
-                <a href="/movies" class="nav-link">Movies</a>
-                <a href="/tv-shows" class="nav-link">TV Shows</a>
-                <a href="/new-popular" class="nav-link">New & Popular</a>
-                <a href="/my-list" class="nav-link">My List</a>
-            </nav>
+        <nav class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/movies" class="nav-link">Movies</a>
+            <a href="/tv-shows" class="nav-link">TV Shows</a>
+            <a href="/new-popular" class="nav-link active">New & Popular</a>
+            <a href="/my-list" class="nav-link">My List</a>
+        </nav>
             <div class="search-container">
-                <input type="text" class="search-input" placeholder="Search movies, TV shows...">
+                <input type="text" class="search-input" placeholder="Search TV shows...">
                 <i class="search-icon">🔍</i>
             </div>
         </div>
@@ -700,20 +631,30 @@
             </div>
         </div>
     </header>
-    
+
     <section class="hero">
         <div class="hero-content">
-            <h1>Welcome to Netflix</h1>
-            <p>Watch your favorite movies and TV shows anytime, anywhere.</p>
-            <a href="#movies-grid" class="cta-button">Explore Now</a>
+            <h1>TV Shows</h1>
+            <p>Binge-watch your favorite series and discover new shows</p>
         </div>
     </section>
-    
+
     <section class="movies-section">
+        <div class="filters">
+            <button class="filter-btn active">All TV Shows</button>
+            <button class="filter-btn">Drama</button>
+            <button class="filter-btn">Comedy</button>
+            <button class="filter-btn">Crime</button>
+            <button class="filter-btn">Sci-Fi</button>
+            <button class="filter-btn">Documentary</button>
+            <button class="filter-btn">Reality</button>
+            <button class="filter-btn">Animation</button>
+        </div>
+
         <div class="movies-row">
-            <h2 class="section-title">Trending Now</h2>
+            <h2 class="section-title">Popular TV Shows</h2>
             <div class="movies-container">
-                {% for movie in movies[:10] %}
+                {% for movie in movies[:15] %}
                 <a href="/movie/{{ movie.id }}" class="movie-card" style="text-decoration: none; color: inherit;">
                     {% if movie.poster_path %}
                     <img src="{{ image_base_url }}{{ movie.poster_path }}" alt="{{ movie.title }}" class="movie-poster">
@@ -751,42 +692,9 @@
         </div>
 
         <div class="movies-row">
-            <h2 class="section-title">Continue Watching</h2>
+            <h2 class="section-title">Top Rated Series</h2>
             <div class="movies-container">
-                {% for movie in movies[10:15] %}
-                <a href="/movie/{{ movie.id }}" class="movie-card continue-card" style="text-decoration: none; color: inherit;">
-                    {% if movie.poster_path %}
-                    <img src="{{ image_base_url }}{{ movie.poster_path }}" alt="{{ movie.title }}" class="movie-poster">
-                    {% else %}
-                    <div class="movie-poster" style="display: flex; align-items: center; justify-content: center; color: #999; font-size: 0.8rem;">
-                        No Image
-                    </div>
-                    {% endif %}
-                    <div class="continue-progress">
-                        <div class="progress-bar" style="width: 75%"></div>
-                    </div>
-                    <div class="movie-info">
-                        <div class="movie-title">{{ movie.title }}</div>
-                        <div class="movie-rating">⭐ {{ "%.1f"|format(movie.vote_average) }}</div>
-                        <div class="movie-meta">
-                            <span>{{ movie.release_date[:4] if movie.release_date else 'N/A' }}</span>
-                            <span>{{ movie.runtime }}min</span>
-                        </div>
-                        <div class="movie-actions">
-                            <button class="action-btn play-btn">▶ Resume</button>
-                            <button class="action-btn">➕</button>
-                            <button class="action-btn">ⓘ</button>
-                        </div>
-                    </div>
-                </a>
-                {% endfor %}
-            </div>
-        </div>
-
-        <div class="movies-row">
-            <h2 class="section-title">Because you watched <em>{{ movies[0].title if movies else 'Popular Movies' }}</em></h2>
-            <div class="movies-container">
-                {% for movie in movies[15:25] %}
+                {% for movie in movies[15:30] %}
                 <a href="/movie/{{ movie.id }}" class="movie-card" style="text-decoration: none; color: inherit;">
                     {% if movie.poster_path %}
                     <img src="{{ image_base_url }}{{ movie.poster_path }}" alt="{{ movie.title }}" class="movie-poster">
@@ -801,39 +709,6 @@
                         <div class="movie-meta">
                             <span>{{ movie.release_date[:4] if movie.release_date else 'N/A' }}</span>
                             <span>{{ movie.runtime }}min</span>
-                        </div>
-                        <div class="movie-description">{{ movie.overview[:80] if movie.overview else 'No description available.' }}...</div>
-                        <div class="movie-actions">
-                            <button class="action-btn play-btn">▶ Play</button>
-                            <button class="action-btn">➕</button>
-                            <button class="action-btn">👍</button>
-                            <button class="action-btn">⏬</button>
-                        </div>
-                    </div>
-                </a>
-                {% endfor %}
-            </div>
-        </div>
-
-        <div class="movies-row">
-            <h2 class="section-title">New Releases</h2>
-            <div class="movies-container">
-                {% for movie in movies[25:35] %}
-                <a href="/movie/{{ movie.id }}" class="movie-card" style="text-decoration: none; color: inherit;">
-                    {% if movie.poster_path %}
-                    <img src="{{ image_base_url }}{{ movie.poster_path }}" alt="{{ movie.title }}" class="movie-poster">
-                    {% else %}
-                    <div class="movie-poster" style="display: flex; align-items: center; justify-content: center; color: #999; font-size: 0.8rem;">
-                        No Image
-                    </div>
-                    {% endif %}
-                    <div class="movie-info">
-                        <div class="movie-title">{{ movie.title }}</div>
-                        <div class="movie-rating">⭐ {{ "%.1f"|format(movie.vote_average) }}</div>
-                        <div class="movie-meta">
-                            <span>{{ movie.release_date[:4] if movie.release_date else 'N/A' }}</span>
-                            <span>{{ movie.runtime }}min</span>
-                            <span class="new-badge">NEW</span>
                         </div>
                         <div class="movie-description">{{ movie.overview[:100] if movie.overview else 'No description available.' }}...</div>
                         <div class="movie-actions">
@@ -849,9 +724,9 @@
         </div>
 
         <div class="movies-row">
-            <h2 class="section-title">Action & Adventure</h2>
+            <h2 class="section-title">Crime & Mystery</h2>
             <div class="movies-container">
-                {% for movie in movies[20:30] %}
+                {% for movie in movies[30:45] %}
                 <a href="/movie/{{ movie.id }}" class="movie-card" style="text-decoration: none; color: inherit;">
                     {% if movie.poster_path %}
                     <img src="{{ image_base_url }}{{ movie.poster_path }}" alt="{{ movie.title }}" class="movie-poster">
@@ -866,6 +741,13 @@
                         <div class="movie-meta">
                             <span>{{ movie.release_date[:4] if movie.release_date else 'N/A' }}</span>
                             <span>{{ movie.runtime }}min</span>
+                        </div>
+                        <div class="movie-description">{{ movie.overview[:100] if movie.overview else 'No description available.' }}...</div>
+                        <div class="movie-actions">
+                            <button class="action-btn play-btn">▶ Play</button>
+                            <button class="action-btn">➕</button>
+                            <button class="action-btn">👍</button>
+                            <button class="action-btn">⏬</button>
                         </div>
                     </div>
                 </a>

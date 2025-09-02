@@ -51,21 +51,49 @@
         }
         
         .header {
-            padding: 20px 4%;
+            padding: 0 4%;
             position: fixed;
             top: 0;
             width: 100%;
             z-index: 100;
-            background: linear-gradient(to bottom, #141414 0%, transparent 100%);
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            transition: background 0.3s ease;
         }
-        
+
+        .header.scrolled {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
         .logo {
             color: #e50914;
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 700;
             text-decoration: none;
+            letter-spacing: -0.02em;
         }
-        
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 400;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #e50914;
+        }
+
         .back-button {
             background: #e50914;
             color: white;
@@ -76,9 +104,9 @@
             font-weight: 500;
             text-decoration: none;
             display: inline-block;
-            margin-right: 1rem;
+            transition: background 0.2s ease;
         }
-        
+
         .back-button:hover {
             background: #b8070f;
         }
@@ -266,10 +294,20 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Header scroll effect
+            const header = document.querySelector('.header');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 100) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+
             // Animate movie poster and info on load
             const moviePoster = document.querySelector('.movie-poster');
             const movieInfo = document.querySelector('.movie-info');
-            
+
             if (moviePoster) {
                 moviePoster.style.opacity = '0';
                 moviePoster.style.transform = 'translateX(-30px)';
@@ -279,7 +317,7 @@
                     moviePoster.style.transform = 'translateX(0)';
                 }, 200);
             }
-            
+
             if (movieInfo) {
                 movieInfo.style.opacity = '0';
                 movieInfo.style.transform = 'translateX(30px)';
@@ -289,17 +327,30 @@
                     movieInfo.style.transform = 'translateX(0)';
                 }, 400);
             }
-            
-            // Animate cast members on load
+
+            // Animate cast members on load with intersection observer
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, index * 100);
+                    }
+                });
+            }, observerOptions);
+
             const castMembers = document.querySelectorAll('.cast-member');
-            castMembers.forEach((member, index) => {
+            castMembers.forEach(member => {
                 member.style.opacity = '0';
                 member.style.transform = 'translateY(20px)';
-                setTimeout(() => {
-                    member.style.transition = 'all 0.6s ease';
-                    member.style.opacity = '1';
-                    member.style.transform = 'translateY(0)';
-                }, 600 + (index * 100));
+                member.style.transition = 'all 0.6s ease';
+                observer.observe(member);
             });
         });
     </script>
@@ -309,6 +360,13 @@
     
     <header class="header">
         <a href="/" class="logo">NETFLIX</a>
+        <nav class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/movies" class="nav-link">Movies</a>
+            <a href="/tv-shows" class="nav-link">TV Shows</a>
+            <a href="/new-popular" class="nav-link">New & Popular</a>
+            <a href="/my-list" class="nav-link">My List</a>
+        </nav>
         <a href="/" class="back-button">← Back to Movies</a>
     </header>
     
@@ -319,10 +377,10 @@
             {% else %}
             <div class="movie-poster no-image">No Poster Available</div>
             {% endif %}
-            
+
             <div class="movie-info">
                 <h1 class="movie-title">{{ movie.title }}</h1>
-                
+
                 <div class="movie-meta">
                     <span class="movie-rating">⭐ {{ "%.1f"|format(movie.vote_average) }}</span>
                     <span class="movie-year">{{ movie.release_date[:4] if movie.release_date else 'N/A' }}</span>
@@ -330,11 +388,11 @@
                     <span class="movie-runtime">{{ movie.runtime }} min</span>
                     {% endif %}
                 </div>
-                
+
                 {% if movie.overview %}
                 <p class="movie-overview">{{ movie.overview }}</p>
                 {% endif %}
-                
+
                 {% if movie.genres %}
                 <div>
                     <span class="section-title">Genres</span>
