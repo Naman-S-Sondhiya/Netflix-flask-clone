@@ -1,6 +1,10 @@
 pipeline {
     agent any
     
+    parameters {
+        booleanParam(name: 'LOCAL_DEPLOYMENT', defaultValue: true, description: 'Deploys Docker image locally')
+        booleanParam(name: 'PUSH_TO_DOCKERHUB', defaultValue: false, description: 'Push Docker image to Docker Hub')
+    }
     environment {
         SONAR_EV = tool 'Sonar'
     }
@@ -46,20 +50,27 @@ pipeline {
                 sh 'docker build -t netflix-clone .'
             }
         }
-        
-        stage('Deploy & Push') {
+        stage('Deploy Locally') {
+            when {
+                expression { params.LOCAL_DEPLOYMENT }
+            }
             steps {
-                withCredentials([
-                    string(credentialsId: 'tmdb-api-key', variable: 'TMDB_API_KEY'),
-                    usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')
-                ]) {
+                withCredentials([string(credentialsId: 'tmdb-api-key', variable: 'TMDB_API_KEY')]) {
                     sh 'docker stop netflix-app || true'
                     sh 'docker rm netflix-app || true'
                     sh 'docker run -d -p 5000:5000 -e TMDB_API_KEY=$TMDB_API_KEY --name netflix-app netflix-clone'
+                }
+            }
+        }
+        stage('Push to DockerHub') {
+            when {
+                expression { params.PUSH_TO_DOCKERHUB }
+            }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
                     sh 'docker tag netflix-clone namanss/netflix-clone:latest'
                     sh 'echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin'
                     sh 'docker push namanss/netflix-clone:latest'
-                }
             }
         }
     }
