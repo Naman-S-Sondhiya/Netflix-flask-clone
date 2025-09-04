@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Clone Code from Github') {
             steps {
-                git url:"https://github.com/Naman-S-Sondhiya/Netflix-flask-clone.git", branch: "master_1"
+                git url:"https://github.com/Naman-S-Sondhiya/Netflix-flask-clone.git", branch: "main"
             }
         }
         

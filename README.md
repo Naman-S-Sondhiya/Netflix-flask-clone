@@ -56,14 +56,21 @@ docker run -p 5000:5000 -e TMDB_API_KEY=your_api_key namanss/netflix-clone:lates
 
 ## 🔧 Jenkins CI/CD Pipeline
 
+### Pipeline Parameters
+
+The pipeline includes configurable parameters:
+
+- **`LOCAL_DEPLOYMENT`** (default: `true`) - Deploys Docker container locally
+- **`PUSH_TO_DOCKERHUB`** (default: `false`) - Pushes image to Docker Hub
+
 ### Required Jenkins Credentials
 
-For successful deployment, configure these credentials in Jenkins:
-
+**Minimum Required:**
 1. **`tmdb-api-key`** (Secret text)
    - ID: `tmdb-api-key`
    - Secret: Your TMDB API key
 
+**Optional (for Docker Hub push):**
 2. **`dockerhub-creds`** (Username/Password)
    - ID: `dockerhub-creds`
    - Username: Your Docker Hub username
@@ -71,33 +78,30 @@ For successful deployment, configure these credentials in Jenkins:
 
 ### Jenkins Setup Steps
 
-1. **Add Credentials**
+1. **Add Required Credential**
    - Go to: `Manage Jenkins` → `Credentials` → `Global`
-   - Add both credentials with exact IDs above
+   - Add `tmdb-api-key` credential
 
 2. **Create Pipeline Job**
    - New Item → Pipeline
    - SCM: Git → Repository URL: `https://github.com/Naman-S-Sondhiya/Netflix-flask-clone.git`
-   - Branch: `master_1`
+   - Branch: `main`
    - Script Path: `Jenkinsfile`
 
-3. **Pipeline Stages**
-   - ✅ Code Clone
-   - ✅ SonarQube Analysis
-   - ✅ OWASP Dependency Check
-   - ✅ Quality Gate
-   - ✅ Trivy Security Scan
-   - ✅ Docker Build
-   - ✅ Deploy & Push to Docker Hub
+3. **Run Pipeline**
+   - **Local deployment only**: Keep defaults (`LOCAL_DEPLOYMENT=true`, `PUSH_TO_DOCKERHUB=false`)
+   - **With Docker Hub push**: Set `PUSH_TO_DOCKERHUB=true` and add `dockerhub-creds`
 
-### Alternative: Skip Docker Hub Push
+### Pipeline Stages
 
-To run without Docker Hub credentials, comment out these lines in `Jenkinsfile`:
-```groovy
-// sh 'docker tag netflix-clone namanss/netflix-clone:latest'
-// sh 'echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin'
-// sh 'docker push namanss/netflix-clone:latest'
-```
+- ✅ Code Clone
+- ✅ SonarQube Analysis
+- ✅ OWASP Dependency Check
+- ✅ Quality Gate
+- ✅ Trivy Security Scan
+- ✅ Docker Build
+- ✅ Deploy Locally (conditional)
+- ✅ Push to Docker Hub (conditional)
 
 ## 📁 Project Structure
 
@@ -106,10 +110,8 @@ Netflix-flask-clone/
 ├── app.py              # Minimal Flask app (45 lines)
 ├── Jenkinsfile         # CI/CD pipeline
 ├── Dockerfile          # Container config
-├── docker-compose.yml  # Docker compose setup
 ├── requirements.txt    # Python dependencies
 ├── .env               # API key (create locally)
-├── run.sh             # Local run script
 ├── static/            # CSS/JS assets
 └── templates/         # HTML templates (6 files)
 ```
@@ -127,10 +129,10 @@ Netflix-flask-clone/
 ## 📦 Dependencies
 
 ```
-Flask==3.1.2          # Web framework
-requests==2.31.0      # HTTP client
-python-dotenv==1.0.0  # Environment variables
-prometheus-client==0.22.1  # Metrics
+Flask                # Web framework
+requests             # HTTP client
+python-dotenv        # Environment variables
+prometheus-client    # Metrics
 ```
 
 ## 🚨 Troubleshooting
@@ -141,8 +143,9 @@ prometheus-client==0.22.1  # Metrics
 
 **Jenkins pipeline fails?**
 - Ensure `tmdb-api-key` credential exists
-- For Docker Hub push, add `dockerhub-creds`
+- For Docker Hub push, set `PUSH_TO_DOCKERHUB=true` and add `dockerhub-creds`
 - Check tool configurations (SonarQube, OWASP, Trivy)
+- Verify Jenkins tools: 'Sonar' and 'owasp' are configured
 
 **Docker issues?**
 - Use pre-built image: `namanss/netflix-clone:latest`
