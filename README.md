@@ -1,8 +1,8 @@
 # Netflix Clone - Minimal Flask App
 
-Minimal Netflix-inspired web application with TMDB API integration, Prometheus metrics, and Docker support.
+Ultra-minimal Netflix-inspired web application with TMDB API integration, Prometheus metrics, and Docker support.
 
-![Flask](https://img.shields.io/badge/Flask-2.3.3-green) ![Python](https://img.shields.io/badge/Python-3.12-blue) ![Docker](https://img.shields.io/badge/Docker-Ready-blue) ![Prometheus](https://img.shields.io/badge/Prometheus-Metrics-orange)
+![Flask](https://img.shields.io/badge/Flask-3.1.2-green) ![Python](https://img.shields.io/badge/Python-3.12-blue) ![Docker](https://img.shields.io/badge/Docker-Ready-blue) ![Prometheus](https://img.shields.io/badge/Prometheus-0.22.1-orange)
 
 ## 🚀 Quick Start
 
@@ -57,14 +57,14 @@ Minimal Netflix-inspired web application with TMDB API integration, Prometheus m
 
 ```
 Netflix-flask-clone/
-├── app.py              # Minimal Flask app (30 lines)
-├── requirements.txt    # Dependencies
+├── app.py              # Ultra-minimal Flask app (45 lines)
+├── requirements.txt    # 4 dependencies with versions
 ├── Dockerfile          # Container config
 ├── .dockerignore       # Docker ignore
 ├── .env               # API key (not in git)
-├── run.sh             # Run script
+├── run.sh             # Run script (executable)
 ├── venv/              # Virtual environment
-└── templates/         # HTML templates
+└── templates/         # HTML templates (6 files)
     ├── index.html     # Home page
     ├── movie.html     # Movie details
     ├── movies.html    # Movies page
@@ -85,10 +85,10 @@ Netflix-flask-clone/
 ## 📦 Dependencies
 
 ```
-Flask
-requests
-python-dotenv
-prometheus-client
+Flask==3.1.2          # Web framework
+requests==2.31.0      # HTTP client
+python-dotenv==1.0.0  # Environment variables
+prometheus-client==0.22.1  # Metrics
 ```
 
 ## 🔧 Environment Variables
@@ -109,6 +109,22 @@ prometheus-client
 - Ensure `.env` file exists
 - Use `--env-file .env` flag
 
+## 🔍 Code Overview
+
+**app.py (45 lines total):**
+- 4 imports + dotenv setup
+- 1 prometheus counter
+- 1 unified data function
+- 6 routes (/, /movie/id, /pages, /metrics, /health)
+- Handles all 5 template pages
+
+**Key Features:**
+- Single route handles 4 pages: `/movies`, `/tv-shows`, `/new-popular`, `/my-list`
+- Unified `get_data()` function for API calls
+- Prometheus metrics tracking
+- Docker containerization
+- Virtual environment setup
+
 ---
 
-**Minimal setup, maximum functionality!** 🎬
+**Ultra-minimal setup, maximum functionality!** 🎬

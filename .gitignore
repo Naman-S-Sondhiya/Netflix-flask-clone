@@ -4,125 +4,29 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
-*.py,cover
-.pytest_cache/
-.coverage
-.coverage.*
-htmlcov/
-.coverage
-.coverage.*
-.pytest_cache/
-.mypy_cache/
-.python-version
 
 # Virtual environments
-env/
 venv/
-.venv/
-ENV/
-env.bak/
-venv.bak/
+env/
+myenv/
 
 # Environment variables
 .env
-.env.local
-.env.production
-.env.test
-.env.*.local
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
-*.sublime-*
-.ropeproject
 
 # OS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
-desktop.ini
 
 # Logs
 *.log
-logs/
-pids/
-*.pid
-*.seed
-*.pid.lock
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
-
-# Docker
-Dockerfile
-.dockerignore
-
-# Build/Output directories
-build/
-dist/
-*.egg-info/
-.eggs/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg
-
-# Coverage reports
-.coverage
-.coverage.*
-htmlcov/
-.coverage
-.coverage.*
-.pytest_cache/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# PyCharm
-.idea/
-
-# VS Code
-.vscode/
-
-# macOS
-.AppleDouble
-.LSOverride
-Icon
-._*
-
-# Windows
-[Tt]humbs.db
-
-# Backup files
-*.bak
-*.backup
-*.tmp
-*.temp
-
-# Local development
-local_settings.py
-local.py
-settings/local.py
-
-# Temporary files
-tmp/
-temp/
-
-# Documentation
-docs/_build/
+nohup.out
 
 # Testing
-.tox/
-.cache/
-.pytest_cache/
+test_*.py
+test_results.txt
