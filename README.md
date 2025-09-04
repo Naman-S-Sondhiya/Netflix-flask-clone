@@ -1,6 +1,6 @@
-# Netflix WEB UI Clone - DevSecOps Flask App
+# Netflix Web UI Clone - DevSecOps Flask Application
 
-A comprehensive DevSecOps project featuring a Netflix-inspired web application with TMDB API integration, automated security scanning, and CI/CD pipeline implementation.
+A comprehensive DevSecOps project featuring a Netflix-inspired web application with TMDB API integration, automated security scanning, and a CI/CD pipeline.
 
 ![Flask](https://img.shields.io/badge/Flask-3.1.2-green) ![Python](https://img.shields.io/badge/Python-3.12-blue) ![Docker](https://img.shields.io/badge/Docker-Ready-blue) ![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-orange) ![SonarQube](https://img.shields.io/badge/SonarQube-Security-blue) ![Trivy](https://img.shields.io/badge/Trivy-Vulnerability-red)
 
@@ -23,8 +23,7 @@ cd Netflix-flask-clone
 1. Visit [TMDB Website](https://www.themoviedb.org/)
 2. Create a free account and log in
 3. Navigate to Profile → Settings → API
-4. Generate a new API key
-5. Accept the terms and provide required details
+4. Generate a new API key and accept the terms
 
 ### Step 3: Run Application Locally with Python
 
@@ -40,31 +39,27 @@ pip install -r requirements.txt
 # Start the Flask application
 python app.py
 
-# Access the application at: 
+# Access the application at:
 http://localhost:5000
 ```
 
 ### Step 4: Run Application with Docker
 
-```
+```bash
 sudo apt-get update
 sudo apt-get install docker.io -y
-sudo usermod -aG docker ubuntu #change username respectively as i am using ubuntu the username by default is "ubuntu"
+sudo usermod -aG docker $USER
+
 newgrp docker
 sudo chmod 777 /var/run/docker.sock
-```
 
-```bash
-# Build Docker image
 docker build -t netflix-clone .
-
-# Run container locally
 docker run -d --name netflix-app -p 5000:5000 -e TMDB_API_KEY=your_api_key netflix-clone
 
-# Or use pre-built image from Docker Hub
+# Alternatively, use the pre-built image with your TMDB_API_KEY
 docker run -d --name netflix-app -p 5000:5000 -e TMDB_API_KEY=your_api_key namanss/netflix-clone:latest
 
-# Access the application at: 
+# Access the application at:
 http://localhost:5000
 ```
 
@@ -72,24 +67,21 @@ http://localhost:5000
 
 ### Install SonarQube
 
-**Note:** We are using the official Docker image of SonarQube (sonarqube:lts-community) for security scanning.
+Using the official SonarQube Docker image for security scanning:
 
 ```bash
-# Run SonarQube container
 docker run -itd --name sonar -p 9000:9000 sonarqube:lts-community
 ```
-```
-# Access SonarQube at: http://localhost:9000
-# Default credentials: admin/admin
-```
+
+Access SonarQube at: http://localhost:9000  
+Default credentials: `admin` / `admin`
 
 ### Install Trivy Security Scanner
 
 ```bash
-# Install Trivy
 sudo apt-get install wget apt-transport-https gnupg lsb-release
 wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/trivy.list
 sudo apt-get update
 sudo apt-get install trivy
 
@@ -108,11 +100,8 @@ sudo apt install fontconfig openjdk-17-jre
 java -version
 
 # Install Jenkins
-sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
-https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
-https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
-/etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo wget -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
 sudo apt-get update
 sudo apt-get install jenkins
 sudo systemctl start jenkins
@@ -120,86 +109,77 @@ sudo systemctl enable jenkins
 sudo usermod -aG docker jenkins
 sudo systemctl restart jenkins
 ```
-```
-# Access Jenkins at: 
-http://localhost:8080
-# Get initial password: 
+
+Access Jenkins at: http://localhost:8080  
+Get initial password:  
+```bash
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
-or 
-sudo service jenkins status # note the long text below CGroup: the first log with long text is the password
 ```
 
 ### Required Jenkins Plugins
 
 Install via `Manage Jenkins` → `Plugin Manager`:
 
-1. **SonarQube Scanner** - `sonar`
-2. **OWASP Dependency-Check** - `dependency-check-jenkins-plugin`
-3. **Docker Pipeline** - `docker-workflow`
-4. **Git** - `git`
-5. **Pipeline** - `workflow-aggregator`
-6. **Credentials Binding** - `credentials-binding`
+- SonarQube Scanner (`sonar`)
+- OWASP Dependency-Check (`dependency-check-jenkins-plugin`)
+- Docker Pipeline (`docker-workflow`)
+- Git (`git`)
+- Pipeline (`workflow-aggregator`)
+- Credentials Binding (`credentials-binding`)
 
 ### Configure Jenkins Tools
 
 Go to `Manage Jenkins` → `Tools`:
 
-#### 1. SonarQube Scanner
-- **Name:** `Sonar` (case sensitive)
-- **Install automatically:** Latest version
+#### SonarQube Scanner
+- Name: `Sonar` (case sensitive)
+- Install automatically: Latest version
 
-#### 2. OWASP Dependency Check
-- **Name:** `owasp` (case sensitive)
-- **Install automatically:** Latest version
+#### OWASP Dependency Check
+- Name: `owasp` (case sensitive)
+- Install automatically: Latest version
 
 ### Configure SonarQube Integration
 
-1. **SonarQube Server Configuration:**
-   - `Manage Jenkins` → `System` → `SonarQube servers`
-   - **Name:** `Sonar` (case sensitive)
-   - **Server URL:** `http://localhost:9000`
-   - **Server authentication token:** Create in SonarQube and add as Jenkins credential
+1. `Manage Jenkins` → `System` → `SonarQube servers`
+2. Name: `Sonar` (case sensitive)
+3. Server URL: `http://localhost:9000`
+4. Server authentication token: Create in SonarQube and add as Jenkins credential
 
-2. **Create SonarQube Token:**
-   - SonarQube → Administration → Security → Users → Tokens
-   - Generate token and add to Jenkins credentials as `Sonar-token`
+Create SonarQube token in SonarQube → Administration → Security → Users → Tokens  
+Add token to Jenkins credentials as `Sonar-token`
 
 ### Required Jenkins Credentials
 
 Configure in `Manage Jenkins` → `Credentials` → `Global`:
 
-1. **`tmdb-api-key`** (Secret text)
-   - Your TMDB API key
-
-2. **`dockerhub-creds`** (Username/Password) - Optional
-   - Docker Hub username and access token
-
-3. **`Sonar-token`** (Secret text)
-   - SonarQube authentication token
+- `tmdb-api-key` (Secret text): Your TMDB API key
+- `dockerhub-creds` (Username/Password) - Optional: Docker Hub username and access token
+- `Sonar-token` (Secret text): SonarQube authentication token
 
 ### Pipeline Configuration
 
-Create new Pipeline job with this `Jenkinsfile`:
+Create a new Pipeline job with this `Jenkinsfile`:
 
 ```groovy
 pipeline {
     agent any
-    
+
     parameters {
-        booleanParam(name: 'LOCAL_DEPLOYMENT', defaultValue: true, description: 'Deploys Docker image locally')
+        booleanParam(name: 'LOCAL_DEPLOYMENT', defaultValue: true, description: 'Deploy Docker image locally')
         booleanParam(name: 'PUSH_TO_DOCKERHUB', defaultValue: false, description: 'Push Docker image to Docker Hub')
     }
     environment {
         SONAR_EV = tool 'Sonar'
     }
-    
+
     stages {
         stage('Clone Code from Github') {
             steps {
                 git url:"https://github.com/Naman-S-Sondhiya/Netflix-flask-clone.git", branch: "main"
             }
         }
-        
+
         stage('SonarQube Code Analysis') {
             steps {
                 withSonarQubeEnv('Sonar') {
@@ -207,14 +187,14 @@ pipeline {
                 }
             }
         }
-        
+
         stage('OWASP Dependency Check') {
             steps {
                 dependencyCheck additionalArguments: "--scan ./", odcInstallation: 'owasp'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
-        
+
         stage('Quality Gate') {
             steps {
                 timeout(time: 1, unit: 'MINUTES') {
@@ -222,13 +202,13 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Trivy File Scan') {
             steps {
                 sh 'trivy fs --exit-code 0 --format table -o trivy-fs-report.html --severity HIGH,CRITICAL --no-progress . || true'
             }
         }
-        
+
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t netflix-clone .'
@@ -259,7 +239,7 @@ pipeline {
             }
         }
     }
-    
+
     post {
         always {
             cleanWs()
@@ -274,8 +254,6 @@ pipeline {
 }
 ```
 
-
-
 ## 📁 Project Structure
 
 ```
@@ -286,26 +264,26 @@ Netflix-flask-clone/
 ├── Jenkinsfile         # CI/CD pipeline
 ├── requirements.txt    # Python dependencies
 ├── .dockerignore       # Docker ignore file
-├── .env               # API key (local only)
-├── static/            # CSS/JS assets
+├── .env                # API key (local only)
+├── static/             # CSS/JS assets
 │   ├── css/
-│   │   └── style.css  # Main stylesheet
+│   │   └── style.css   # Main stylesheet
 │   └── js/
-│       └── main.js    # JavaScript functionality
-└── templates/         # HTML templates
-    ├── index.html     # Home page
-    ├── movie.html     # Movie detail page
-    ├── movies.html    # Movies listing
-    ├── my-list.html   # User list page
-    ├── new-popular.html # New & popular
-    └── tv-shows.html  # TV shows page
+│       └── main.js     # JavaScript functionality
+└── templates/          # HTML templates
+    ├── index.html      # Home page
+    ├── movie.html      # Movie detail page
+    ├── movies.html     # Movies listing
+    ├── my-list.html    # User list page
+    ├── new-popular.html# New & popular
+    └── tv-shows.html   # TV shows page
 ```
 
 ## 🎯 Features
 
-- **Netflix-style UI**: 5 pages with responsive design
+- **Netflix-style UI**: Responsive design across 5 pages
 - **TMDB Integration**: Real movie data and posters
-- **Security Scanning**: SonarQube, OWASP, Trivy
+- **Security Scanning**: SonarQube, OWASP Dependency Check, Trivy
 - **Prometheus Metrics**: `/metrics` endpoint
 - **Health Check**: `/health` endpoint
 - **Docker Ready**: Containerized deployment
@@ -314,30 +292,31 @@ Netflix-flask-clone/
 ## 🚨 Troubleshooting
 
 ### Docker Permission Issues
+
 ```bash
 sudo usermod -aG docker jenkins
 sudo systemctl restart jenkins
 ```
 
-### Jenkins Pipeline Fails
+### Jenkins Pipeline Failures
+
 - Verify tool names: `Sonar` and `owasp` (case sensitive)
 - Check SonarQube server configuration
-- Ensure all required plugins are installed
+- Ensure required plugins are installed
 - Verify credentials exist with correct IDs
 
 ### Application Issues
-- Verify TMDB API key is valid
+
+- Verify TMDB API key validity
 - Check Docker container logs: `docker logs netflix-app`
 - Ensure port 5000 is accessible
 
 ## 📦 Dependencies
 
-```
-Flask               # Web framework
-requests            # HTTP client
-python-dotenv       # Environment variables
-prometheus-client   # Metrics
-```
+- Flask               # Web framework
+- requests            # HTTP client
+- python-dotenv       # Environment variables
+- prometheus-client   # Metrics
 
 ## 🔗 Useful Links
 
