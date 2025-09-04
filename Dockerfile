@@ -1,11 +1,12 @@
-FROM python:3.14.0rc2-alpine3.22
+FROM python:3.12-slim
 
 WORKDIR /app
 
 ADD . .
 
-#RUN python -m venv venv
-RUN source venv/bin/activate
+RUN python -m venv venv 
+
+RUN source /venv/bin/activate
 
 RUN pip install -r requirements.txt
 

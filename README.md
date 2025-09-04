@@ -85,10 +85,10 @@ Netflix-flask-clone/
 ## 📦 Dependencies
 
 ```
-Flask==3.1.2          # Web framework
-requests==2.31.0      # HTTP client
-python-dotenv==1.0.0  # Environment variables
-prometheus-client==0.22.1  # Metrics
+Flask                # Web framework
+requests             # HTTP client
+python-dotenv        # Environment variables
+prometheus-client    # Metrics
 ```
 
 ## 🔧 Environment Variables
@@ -127,4 +127,4 @@ prometheus-client==0.22.1  # Metrics
 
 ---
 
-**Ultra-minimal setup, maximum functionality!** 🎬
+**NETFLIX & CHILL!** 🎬

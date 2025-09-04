@@ -334,6 +334,7 @@ body::before {
 
 .movie-card:hover .movie-info {
     opacity: 1;
+    transform: scale(0.769);
 }
 
 .movie-title {
