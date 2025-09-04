@@ -6,10 +6,9 @@ ADD . .
 
 RUN python -m venv venv 
 
-RUN source /venv/bin/activate
-
-RUN pip install -r requirements.txt
+RUN /venv/bin/pip install --upgrade pip
+RUN /venv/bin/pip install -r requirements.txt
 
 EXPOSE 5000
 
-CMD ["python", "app.py"]
+CMD ["/venv/vin/python", "app.py"]
