@@ -27,7 +27,7 @@ pipeline {
         stage('OWASP Dependency Check') {
             steps {
                 dependencyCheck additionalArguments: "--scan ./", odcInstallation: 'owasp'
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                dependencyPublisher pattern: '**/dependency-check-report.xml'
             }
         }
         
@@ -71,6 +71,7 @@ pipeline {
                     sh 'docker tag netflix-clone namanss/netflix-clone:latest'
                     sh 'echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin'
                     sh 'docker push namanss/netflix-clone:latest'
+                }
             }
         }
     }
