@@ -1,132 +1,114 @@
-# Netflix Clone - Movie Discovery App
+# Netflix Clone - Minimal Flask App
 
-A modern Netflix-inspired web application that displays currently playing movies using the TMDB API. Built with Flask, Docker, and beautiful responsive design.
+Minimal Netflix-inspired web application with TMDB API integration, Prometheus metrics, and Docker support.
 
-![Netflix Clone](https://img.shields.io/badge/Netflix-Clone-red) ![Python](https://img.shields.io/badge/Python-3.9-blue) ![Flask](https://img.shields.io/badge/Flask-2.0-green) ![Docker](https://img.shields.io/badge/Docker-Ready-blue)
-
-## 🎬 Features
-
-- **Movie Discovery**: Browse currently playing movies in theaters
-- **Movie Details**: View detailed information including cast, ratings, and overview
-- **Responsive Design**: Works perfectly on desktop and mobile devices
-- **Netflix-style UI**: Beautiful gradients, animations, and hover effects
-- **Docker Support**: Easy containerized deployment
-- **Pagination**: Browse through multiple pages of movies
+![Flask](https://img.shields.io/badge/Flask-2.3.3-green) ![Python](https://img.shields.io/badge/Python-3.12-blue) ![Docker](https://img.shields.io/badge/Docker-Ready-blue) ![Prometheus](https://img.shields.io/badge/Prometheus-Metrics-orange)
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Python 
-- Docker (optional)
+- Python 3.12+
 - TMDB API key ([Get one here](https://www.themoviedb.org/settings/api))
 
-### Local Development
+### Setup & Run
 
-1. **Clone the repository**
+1. **Clone & Navigate**
    ```bash
-   git clone https://github.com/Naman-S-Sondhiya/Netflix-flask-clone.git
-   cd Netflix
+   git clone <repo-url>
+   cd Netflix-flask-clone
    ```
 
-2. **Install dependencies**
+2. **Create Virtual Environment**
    ```bash
-   pip3 install -r requirements.txt
+   python3 -m venv venv
    ```
 
-3. **Set up your API key** **required create a TMDB account and acquire the TMDB API key, & provide your actual API key**
+3. **Install Dependencies**
    ```bash
-   # Create a .env file (not tracked by git)
-   echo "TMDB_API_KEY=your_actual_api_key_here" > .env
+   venv/bin/python -m pip install -r requirements.txt
    ```
 
-4. **Run the application**
+4. **Set API Key**
    ```bash
-   python app.py
+   echo "TMDB_API_KEY=your_api_key_here" > .env
    ```
 
-5. **Open your browser**
-   Navigate to `http://localhost:5000`
+5. **Run Application**
+   ```bash
+   ./run.sh
+   # OR
+   venv/bin/python app.py
+   ```
+
+6. **Access Application**
+   - Main app: `http://localhost:5000`
+   - Metrics: `http://localhost:5000/metrics`
+   - Health: `http://localhost:5000/health`
 
 ### Docker Deployment
 
-1. **Build the Docker image**
+1. **Build & Run**
    ```bash
-   docker build -t netflix-app --build-arg TMDB_API_KEY=your_actual_api_key_here .
+   docker build -t netflix-clone .
+   docker run -p 5000:5000 --env-file .env netflix-clone
    ```
-
-2. **Run the container**
-   ```bash
-   docker run -p 5000:5000 netflix-app
-   ```
-
-3. **Access the application**
-   Open `http://localhost:5000` in your browser
 
 ## 📁 Project Structure
 
 ```
-Netflix/
-├── app.py              # Main Flask application
-├── config.py           # Configuration settings
-├── requirements.txt    # Python dependencies
-├── Dockerfile          # Docker configuration
-├── .gitignore         # Git ignore rules
-├── .dockerignore      # Docker ignore rules
-├── README.md          # This file
+Netflix-flask-clone/
+├── app.py              # Minimal Flask app (30 lines)
+├── requirements.txt    # Dependencies
+├── Dockerfile          # Container config
+├── .dockerignore       # Docker ignore
+├── .env               # API key (not in git)
+├── run.sh             # Run script
+├── venv/              # Virtual environment
 └── templates/         # HTML templates
-    ├── index.html     # Main movie listing page
-    └── movie.html     # Movie detail page
+    ├── index.html     # Home page
+    ├── movie.html     # Movie details
+    ├── movies.html    # Movies page
+    ├── tv-shows.html  # TV shows page
+    ├── new-popular.html # New & popular
+    └── my-list.html   # My list
 ```
 
-## 🎨 UI Features
+## 🎯 Features
 
-- **Modern Design**: Netflix-inspired dark theme with red accents
-- **Smooth Animations**: Fade-in effects and hover transitions
-- **Responsive Grid**: Adaptive movie card layout
-- **Movie Details**: Comprehensive information with cast photos
-- **Mobile Friendly**: Optimized for all screen sizes
-
-## 🔧 Configuration
-
-The app uses environment variables for configuration:
-
-- `TMDB_API_KEY`: Your TMDB API key (required)
-- `FLASK_ENV`: Set to 'production' or 'development'
-- `DEBUG`: Enable debug mode (true/false)
+- **5 Pages**: Home, Movies, TV Shows, New & Popular, My List
+- **Movie Details**: Cast, ratings, overview
+- **Prometheus Metrics**: `/metrics` endpoint
+- **Health Check**: `/health` endpoint
+- **Responsive Design**: Mobile-friendly
+- **Docker Ready**: Containerized deployment
 
 ## 📦 Dependencies
 
-- **Flask**: Web framework
-- **Requests**: HTTP client for API calls
-- **Python-dotenv**: Environment variable management
-- **Gunicorn**: Production WSGI server
-- **Werkzeug**: WSGI utilities
+```
+Flask
+requests
+python-dotenv
+prometheus-client
+```
 
-## 🤝 Contributing
+## 🔧 Environment Variables
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+- `TMDB_API_KEY`: Required TMDB API key
 
-## 📄 License
+## 🚨 Troubleshooting
 
-This project is open source and available under the MIT License.
+**No movies showing?**
+- Check your TMDB API key in `.env`
+- Verify internet connection
 
-## ⚠️ Important Notes
+**Import errors?**
+- Use virtual environment: `venv/bin/python app.py`
+- Install dependencies: `venv/bin/pip install -r requirements.txt`
 
-- Keep your TMDB API key secure - never commit it to version control
-- The `.env` file is automatically excluded by `.gitignore`
-- For production use, consider adding proper error handling and logging
-
-## 🆘 Support
-
-If you encounter any issues:
-1. Check that your API key is valid
-2. Ensure all dependencies are installed
-3. Verify Docker is running (if using containers)
+**Docker issues?**
+- Ensure `.env` file exists
+- Use `--env-file .env` flag
 
 ---
 
-**Enjoy exploring movies!** 🍿
+**Minimal setup, maximum functionality!** 🎬
