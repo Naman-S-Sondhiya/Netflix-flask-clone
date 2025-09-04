@@ -1,10 +1,10 @@
-# Netflix Clone - Minimal Flask App
+# Netflix Clone - DevSecOps Flask App
 
-Ultra-minimal Netflix-inspired web application with TMDB API integration, Prometheus metrics, and Docker support.
+Minimal Netflix-inspired web application with TMDB API integration, Prometheus metrics, and complete CI/CD pipeline.
 
-![Flask](https://img.shields.io/badge/Flask-3.1.2-green) ![Python](https://img.shields.io/badge/Python-3.12-blue) ![Docker](https://img.shields.io/badge/Docker-Ready-blue) ![Prometheus](https://img.shields.io/badge/Prometheus-0.22.1-orange)
+![Flask](https://img.shields.io/badge/Flask-3.1.2-green) ![Python](https://img.shields.io/badge/Python-3.12-blue) ![Docker](https://img.shields.io/badge/Docker-Ready-blue) ![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-orange)
 
-## 🚀 Quick Start
+## 🚀 Local Development
 
 ### Prerequisites
 - Python 3.12+
@@ -12,119 +12,142 @@ Ultra-minimal Netflix-inspired web application with TMDB API integration, Promet
 
 ### Setup & Run
 
-1. **Clone & Navigate**
+1. **Clone Repository**
    ```bash
-   git clone <repo-url>
+   git clone https://github.com/Naman-S-Sondhiya/Netflix-flask-clone.git
    cd Netflix-flask-clone
    ```
 
-2. **Create Virtual Environment**
+2. **Create .env File**
+   ```bash
+   echo "TMDB_API_KEY=your_actual_api_key_here" > .env
+   ```
+
+3. **Setup Virtual Environment**
    ```bash
    python3 -m venv venv
+   venv/bin/pip install -r requirements.txt
    ```
 
-3. **Install Dependencies**
-   ```bash
-   venv/bin/python -m pip install -r requirements.txt
-   ```
-
-4. **Set API Key**
-   ```bash
-   echo "TMDB_API_KEY=your_api_key_here" > .env
-   ```
-
-5. **Run Application**
+4. **Run Application**
    ```bash
    ./run.sh
-   # OR
-   venv/bin/python app.py
    ```
 
-6. **Access Application**
+5. **Access Application**
    - Main app: `http://localhost:5000`
    - Metrics: `http://localhost:5000/metrics`
    - Health: `http://localhost:5000/health`
 
-### Docker Deployment
+## 🐳 Docker Deployment
 
-1. **Build & Run**
-   ```bash
-   docker build -t netflix-clone .
-   docker run -p 5000:5000 --env-file .env netflix-clone
-   ```
+### Option 1: Build Locally
+```bash
+docker build -t netflix-clone .
+docker run -p 5000:5000 -e TMDB_API_KEY=your_api_key netflix-clone
+```
+
+### Option 2: Use Pre-built Image
+```bash
+docker run -p 5000:5000 -e TMDB_API_KEY=your_api_key namanss/netflix-clone:latest
+```
+
+**Pre-built Docker Image:** [namanss/netflix-clone](https://hub.docker.com/repository/docker/namanss/netflix-clone/)
+
+## 🔧 Jenkins CI/CD Pipeline
+
+### Required Jenkins Credentials
+
+For successful deployment, configure these credentials in Jenkins:
+
+1. **`tmdb-api-key`** (Secret text)
+   - ID: `tmdb-api-key`
+   - Secret: Your TMDB API key
+
+2. **`dockerhub-creds`** (Username/Password)
+   - ID: `dockerhub-creds`
+   - Username: Your Docker Hub username
+   - Password: Your Docker Hub access token
+
+### Jenkins Setup Steps
+
+1. **Add Credentials**
+   - Go to: `Manage Jenkins` → `Credentials` → `Global`
+   - Add both credentials with exact IDs above
+
+2. **Create Pipeline Job**
+   - New Item → Pipeline
+   - SCM: Git → Repository URL: `https://github.com/Naman-S-Sondhiya/Netflix-flask-clone.git`
+   - Branch: `master_1`
+   - Script Path: `Jenkinsfile`
+
+3. **Pipeline Stages**
+   - ✅ Code Clone
+   - ✅ SonarQube Analysis
+   - ✅ OWASP Dependency Check
+   - ✅ Quality Gate
+   - ✅ Trivy Security Scan
+   - ✅ Docker Build
+   - ✅ Deploy & Push to Docker Hub
+
+### Alternative: Skip Docker Hub Push
+
+To run without Docker Hub credentials, comment out these lines in `Jenkinsfile`:
+```groovy
+// sh 'docker tag netflix-clone namanss/netflix-clone:latest'
+// sh 'echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin'
+// sh 'docker push namanss/netflix-clone:latest'
+```
 
 ## 📁 Project Structure
 
 ```
 Netflix-flask-clone/
-├── app.py              # Ultra-minimal Flask app (45 lines)
-├── requirements.txt    # 4 dependencies with versions
+├── app.py              # Minimal Flask app (45 lines)
+├── Jenkinsfile         # CI/CD pipeline
 ├── Dockerfile          # Container config
-├── .dockerignore       # Docker ignore
-├── .env               # API key (not in git)
-├── run.sh             # Run script (executable)
-├── venv/              # Virtual environment
+├── docker-compose.yml  # Docker compose setup
+├── requirements.txt    # Python dependencies
+├── .env               # API key (create locally)
+├── run.sh             # Local run script
+├── static/            # CSS/JS assets
 └── templates/         # HTML templates (6 files)
-    ├── index.html     # Home page
-    ├── movie.html     # Movie details
-    ├── movies.html    # Movies page
-    ├── tv-shows.html  # TV shows page
-    ├── new-popular.html # New & popular
-    └── my-list.html   # My list
 ```
 
 ## 🎯 Features
 
-- **5 Pages**: Home, Movies, TV Shows, New & Popular, My List
-- **Movie Details**: Cast, ratings, overview
-- **Prometheus Metrics**: `/metrics` endpoint
+- **5 Netflix Pages**: Home, Movies, TV Shows, New & Popular, My List
+- **Movie Details**: Cast, ratings, overview from TMDB API
+- **Prometheus Metrics**: `/metrics` endpoint for monitoring
 - **Health Check**: `/health` endpoint
-- **Responsive Design**: Mobile-friendly
+- **DevSecOps Pipeline**: SonarQube, OWASP, Trivy security scans
 - **Docker Ready**: Containerized deployment
+- **Responsive Design**: Mobile-friendly UI
 
 ## 📦 Dependencies
 
 ```
-Flask                # Web framework
-requests             # HTTP client
-python-dotenv        # Environment variables
-prometheus-client    # Metrics
+Flask==3.1.2          # Web framework
+requests==2.31.0      # HTTP client
+python-dotenv==1.0.0  # Environment variables
+prometheus-client==0.22.1  # Metrics
 ```
-
-## 🔧 Environment Variables
-
-- `TMDB_API_KEY`: Required TMDB API key
 
 ## 🚨 Troubleshooting
 
 **No movies showing?**
-- Check your TMDB API key in `.env`
-- Verify internet connection
+- Verify TMDB API key in `.env` or Jenkins credentials
+- Check internet connectivity
 
-**Import errors?**
-- Use virtual environment: `venv/bin/python app.py`
-- Install dependencies: `venv/bin/pip install -r requirements.txt`
+**Jenkins pipeline fails?**
+- Ensure `tmdb-api-key` credential exists
+- For Docker Hub push, add `dockerhub-creds`
+- Check tool configurations (SonarQube, OWASP, Trivy)
 
 **Docker issues?**
-- Ensure `.env` file exists
-- Use `--env-file .env` flag
-
-## 🔍 Code Overview
-
-**app.py (45 lines total):**
-- 4 imports + dotenv setup
-- 1 prometheus counter
-- 1 unified data function
-- 6 routes (/, /movie/id, /pages, /metrics, /health)
-- Handles all 5 template pages
-
-**Key Features:**
-- Single route handles 4 pages: `/movies`, `/tv-shows`, `/new-popular`, `/my-list`
-- Unified `get_data()` function for API calls
-- Prometheus metrics tracking
-- Docker containerization
-- Virtual environment setup
+- Use pre-built image: `namanss/netflix-clone:latest`
+- Ensure API key is passed: `-e TMDB_API_KEY=your_key`
 
 ---
 
-**NETFLIX & CHILL!** 🎬
+**Production-ready DevSecOps setup!** 🚀
