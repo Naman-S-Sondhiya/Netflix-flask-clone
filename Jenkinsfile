@@ -2,7 +2,6 @@ pipeline {
     agent any
     
     environment {
-        TMDB_API_KEY = credentials('tmdb-api-key')
         SONAR_EV = tool 'Sonar'
     }
     
@@ -12,6 +11,7 @@ pipeline {
                 git url:"https://github.com/Naman-S-Sondhiya/Netflix-flask-clone.git", branch: "master_1"
             }
         }
+        
         stage('SonarQube Code Analysis') {
             steps {
                 withSonarQubeEnv('Sonar') {
@@ -19,12 +19,14 @@ pipeline {
                 }
             }
         }
-        stage('OWASP dependency check') {
+        
+        stage('OWASP Dependency Check') {
             steps {
                 dependencyCheck additionalArguments: "--scan ./", odcInstallation: 'owasp'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
+        
         stage('Quality Gate') {
             steps {
                 timeout(time: 1, unit: 'MINUTES') {
@@ -32,20 +34,45 @@ pipeline {
                 }
             }
         }
-        stage('Trivy File scan') {
+        
+        stage('Trivy File Scan') {
             steps {
-                sh 'trivy fs --exit-code 1 --format table -o trivy-fs-report.html --severity HIGH,CRITICAL --no-progress . || true'
+                sh 'trivy fs --exit-code 0 --format table -o trivy-fs-report.html --severity HIGH,CRITICAL --no-progress . || true'
             }
         }
-        stage('Locally Build the Docker-image') {
+        
+        stage('Build Docker Image') {
             steps {
                 sh 'docker build -t netflix-clone .'
             }
         }
-        stage('Deploy') {
+        
+        stage('Deploy & Push') {
             steps {
-                sh 'docker run -d -p 5000:5000 -e TMDB_API_KEY=$TMDB_API_KEY --name netflix-app netflix-clone'
+                withCredentials([
+                    string(credentialsId: 'tmdb-api-key', variable: 'TMDB_API_KEY'),
+                    usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')
+                ]) {
+                    sh 'docker stop netflix-app || true'
+                    sh 'docker rm netflix-app || true'
+                    sh 'docker run -d -p 5000:5000 -e TMDB_API_KEY=$TMDB_API_KEY --name netflix-app netflix-clone'
+                    sh 'docker tag netflix-clone namanss/netflix-clone:latest'
+                    sh 'echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin'
+                    sh 'docker push namanss/netflix-clone:latest'
+                }
             }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Check logs for details.'
         }
     }
 }
