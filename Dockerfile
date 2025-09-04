@@ -11,4 +11,4 @@ RUN venv/bin/pip install -r requirements.txt
 
 EXPOSE 5000
 
-CMD ["/venv/vin/python", "app.py"]
+CMD ["/app/venv/vin/python", "app.py"]
