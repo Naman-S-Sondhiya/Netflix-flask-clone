@@ -69,10 +69,8 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
                     sh 'docker tag netflix-clone namanss/netflix-clone:v${BUILD_NUMBER}'
-                    sh 'docker tag netflix-clone namanss/netflix-clone:latest'
                     sh 'echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin'
                     sh 'docker push namanss/netflix-clone:v${BUILD_NUMBER}'
-                    sh 'docker push namanss/netflix-clone:latest'
                 }
             }
         }
