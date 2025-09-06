@@ -26,7 +26,7 @@ pipeline {
         
         stage('OWASP Dependency Check') {
             steps {
-                dependencyCheck additionalArguments: "--scan ./", odcInstallation: 'owasp'
+                dependencyCheck additionalArguments: "--scan ./ --format ALL", odcInstallation: 'owasp'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
@@ -41,7 +41,7 @@ pipeline {
         
         stage('Trivy File Scan') {
             steps {
-                sh 'trivy fs --exit-code 0 --format table -o trivy-fs-report.html --severity HIGH,CRITICAL --no-progress . || true'
+                sh 'trivy fs --exit-code 1 --severity HIGH,CRITICAL --no-progress . || true'
             }
         }
         
@@ -68,9 +68,9 @@ pipeline {
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
-                    sh 'docker tag netflix-clone namanss/netflix-clone:latest'
+                    sh 'docker tag netflix-clone namanss/netflix-clone:v${BUILD_NUMBER}'
                     sh 'echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin'
-                    sh 'docker push namanss/netflix-clone:latest'
+                    sh 'docker push namanss/netflix-clone:v${BUILD_NUMBER}'
                 }
             }
         }
