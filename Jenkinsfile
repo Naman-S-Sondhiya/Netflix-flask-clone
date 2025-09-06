@@ -67,10 +67,13 @@ pipeline {
         }
         stage('Push to DockerHub') {
             when {
-                expression { params.PUSH_TO_DOCKERHUB }
+                expression { params.RUN_&_PUSH_TO_DOCKERHUB }
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
+                    sh 'docker stop netflix-app || true'
+                    sh 'docker rm netflix-app || true'
+                    sh 'docker run -itd -p 5000:5000 -e TMDB_API_KEY=$TMDB_API_KEY --name netflix-app netflix-clone'
                     sh 'docker tag netflix-clone namanss/netflix-clone:v${BUILD_NUMBER}'
                     sh 'docker tag netflix-clone namanss/netflix-clone:latest'
                     sh 'echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin'
