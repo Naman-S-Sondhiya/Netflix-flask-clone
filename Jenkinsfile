@@ -23,14 +23,17 @@ pipeline {
                 }
             }
         }
-        
+        stage('GitLeaks Scan') {
+            steps {
+                sh 'gitleaks detect --source . -r gitleaks-report.json -f json'
+            }
+        }
         stage('OWASP Dependency Check') {
             steps {
                 dependencyCheck additionalArguments: "--scan ./ --format ALL", odcInstallation: 'owasp'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
-        
         stage('Quality Gate') {
             steps {
                 timeout(time: 5, unit: 'MINUTES') {
@@ -38,13 +41,11 @@ pipeline {
                 }
             }
         }
-        
         stage('Trivy File Scan') {
             steps {
                 sh 'trivy fs --exit-code 1 --severity HIGH,CRITICAL --no-progress . || true'
             }
         }
-        
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t netflix-clone .'
