@@ -1,9 +1,11 @@
 pipeline {
     agent any
-    
     parameters {
         booleanParam(name: 'LOCAL_DEPLOYMENT', defaultValue: true, description: 'Deploys Docker image locally')
         booleanParam(name: 'PUSH_TO_DOCKERHUB', defaultValue: false, description: 'Push Docker image to Docker Hub')
+    }
+    tools {
+        jdk 'jdk17'
     }
     environment {
         SONAR_EV = tool 'Sonar'
