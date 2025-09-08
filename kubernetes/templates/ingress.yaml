@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: netflix-clone-ingress
+  namespace: avaline
+  annotations: {}
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: netflix.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: netflix-clone
+            port:
+              number: 5000
