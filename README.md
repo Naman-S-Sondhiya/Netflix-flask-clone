@@ -1,13 +1,13 @@
 # Netflix Web UI Clone - DevSecOps Flask Application
 
-A comprehensive DevSecOps project featuring a Netflix-inspired web application with TMDB API integration, automated security scanning, and a CI/CD pipeline.
+A comprehensive DevSecOps project featuring a Netflix-inspired web application with TMDB API integration, automated security scanning, and CI/CD pipeline.
 
 ![Flask](https://img.shields.io/badge/Flask-3.1.2-green) ![Python](https://img.shields.io/badge/Python-3.12-blue) ![Docker](https://img.shields.io/badge/Docker-Ready-blue) ![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-orange) ![SonarQube](https://img.shields.io/badge/SonarQube-Security-blue) ![Trivy](https://img.shields.io/badge/Trivy-Vulnerability-red)
 
 ## 🚀 Phase 1: Local Development Setup
 
 ### Prerequisites
-- Python 
+- Python 3.12+
 - TMDB API Key
 - Docker (optional, for containerized deployment)
 
@@ -73,7 +73,7 @@ Using the official SonarQube Docker image for security scanning:
 docker run -itd --name sonar -p 9000:9000 sonarqube:lts-community
 ```
 
-Access SonarQube at: http://localhost:9000  
+Access SonarQube at: http://localhost:9000
 Default credentials: `admin` / `admin`
 
 ### Install Trivy Security Scanner
@@ -110,8 +110,8 @@ sudo usermod -aG docker jenkins
 sudo systemctl restart jenkins
 ```
 
-Access Jenkins at: http://localhost:8080  
-Get initial password:  
+Access Jenkins at: http://localhost:8080
+Get initial password:
 ```bash
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
@@ -146,7 +146,7 @@ Go to `Manage Jenkins` → `Tools`:
 3. Server URL: `http://localhost:9000`
 4. Server authentication token: Create in SonarQube and add as Jenkins credential
 
-Create SonarQube token in SonarQube → Administration → Security → Users → Tokens  
+Create SonarQube token in SonarQube → Administration → Security → Users → Tokens
 Add token to Jenkins credentials as `Sonar-token`
 
 ### Required Jenkins Credentials
@@ -164,22 +164,22 @@ Create a new Pipeline job with this `Jenkinsfile`:
 ```groovy
 pipeline {
     agent any
-
     parameters {
-        booleanParam(name: 'LOCAL_DEPLOYMENT', defaultValue: true, description: 'Deploy Docker image locally')
+        booleanParam(name: 'LOCAL_DEPLOYMENT', defaultValue: true, description: 'Deploys Docker image locally')
         booleanParam(name: 'PUSH_TO_DOCKERHUB', defaultValue: false, description: 'Push Docker image to Docker Hub')
+    }
+    tools {
+        jdk 'jdk17'
     }
     environment {
         SONAR_EV = tool 'Sonar'
     }
-
     stages {
         stage('Clone Code from Github') {
             steps {
-                git url:"https://github.com/Naman-S-Sondhiya/Netflix-flask-clone.git", branch: "main"
+                git url:"https://github.com/Naman-S-Sondhiya/Netflix-flask-clone.git", branch: "master_3"
             }
         }
-
         stage('SonarQube Code Analysis') {
             steps {
                 withSonarQubeEnv('Sonar') {
@@ -187,31 +187,34 @@ pipeline {
                 }
             }
         }
-
+        stage('GitLeaks Scan') {
+            steps {
+                sh 'gitleaks detect --source . -r gitleaks-report.json -f json'
+            }
+        }
         stage('OWASP Dependency Check') {
             steps {
-                dependencyCheck additionalArguments: "--scan ./", odcInstallation: 'owasp'
+                dependencyCheck additionalArguments: "--scan ./ --format ALL", odcInstallation: 'owasp'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
-
         stage('Quality Gate') {
             steps {
-                timeout(time: 1, unit: 'MINUTES') {
+                timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
             }
         }
-
         stage('Trivy File Scan') {
             steps {
-                sh 'trivy fs --exit-code 0 --format table -o trivy-fs-report.html --severity HIGH,CRITICAL --no-progress . || true'
+                sh 'trivy fs --exit-code 1 --severity HIGH,CRITICAL --no-progress . || true'
             }
         }
-
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t netflix-clone .'
+                withCredentials([string(credentialsId: 'tmdb-api-key', variable: 'TMDB_API_KEY')]) {
+                    sh 'docker build --build-arg TMDB_API_KEY=$TMDB_API_KEY -t netflix-clone .'
+                }
             }
         }
         stage('Deploy Locally') {
@@ -232,8 +235,10 @@ pipeline {
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
+                    sh 'docker tag netflix-clone namanss/netflix-clone:v${BUILD_NUMBER}'
                     sh 'docker tag netflix-clone namanss/netflix-clone:latest'
                     sh 'echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin'
+                    sh 'docker push namanss/netflix-clone:v${BUILD_NUMBER}'
                     sh 'docker push namanss/netflix-clone:latest'
                 }
             }
@@ -254,17 +259,77 @@ pipeline {
 }
 ```
 
+## 🚀 Phase 4: Kubernetes Deployment
+
+### Prerequisites
+- Kubernetes cluster (e.g., Minikube, EKS, GKE)
+- Helm 3.x installed
+- kubectl configured to access your cluster
+
+### Step 1: Install Helm
+
+```bash
+# On Linux
+curl https://get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz -o helm.tar.gz
+tar -zxvf helm.tar.gz
+sudo mv linux-amd64/helm /usr/local/bin/helm
+
+# Verify installation
+helm version
+```
+
+### Step 2: Deploy Netflix Clone using Helm
+
+```bash
+# Navigate to the kubernetes directory
+cd kubernetes
+
+# Install the Helm chart
+helm install netflix-clone . --namespace avaline --create-namespace
+
+# Check deployment status
+kubectl get pods -n avaline
+kubectl get svc -n avaline
+
+# Get the service URL
+kubectl get svc netflix-clone -n avaline -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+```
+
+### Step 3: Access the Application
+
+- If using LoadBalancer: Access via the external IP
+- If using NodePort: `kubectl port-forward svc/netflix-clone 5000:5000 -n avaline`
+- Access at: http://localhost:5000 (if port-forwarded)
+
+### Step 4: Update Configuration
+
+Edit `values.yaml` to customize deployment:
+
+```yaml
+namespace: avaline
+container: docker.io/namanss/netflix-clone:latest
+```
+
+### Step 5: Uninstall
+
+```bash
+helm uninstall netflix-clone -n avaline
+kubectl delete namespace avaline
+```
+
 ## 📁 Project Structure
 
 ```
 Netflix-flask-clone/
 ├── app.py              # Flask application
-├── docker-compose.yml  # Docker Compose configuration
 ├── Dockerfile          # Container configuration
 ├── Jenkinsfile         # CI/CD pipeline
 ├── requirements.txt    # Python dependencies
-├── .dockerignore       # Docker ignore file
-├── .env                # API key (local only)
+├── kubernetes/         # Kubernetes Helm chart
+│   ├── Chart.yaml      # Helm chart metadata
+│   ├── values.yaml     # Helm values
+│   ├── templates/      # Kubernetes manifests
+│   └── charts/         # Sub-charts
 ├── static/             # CSS/JS assets
 │   ├── css/
 │   │   └── style.css   # Main stylesheet
@@ -288,6 +353,7 @@ Netflix-flask-clone/
 - **Health Check**: `/health` endpoint
 - **Docker Ready**: Containerized deployment
 - **CI/CD Pipeline**: Automated testing and deployment
+- **Kubernetes Deployment**: Helm chart for cloud-native deployment
 
 ## 🚨 Troubleshooting
 
