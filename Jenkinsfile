@@ -10,14 +10,12 @@ pipeline {
     environment {
         SONAR_EV = tool 'Sonar'
     }
-    
     stages {
         stage('Clone Code from Github') {
             steps {
                 git url:"https://github.com/Naman-S-Sondhiya/Netflix-flask-clone.git", branch: "master_3"
             }
         }
-        
         stage('SonarQube Code Analysis') {
             steps {
                 withSonarQubeEnv('Sonar') {
@@ -50,7 +48,9 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t netflix-clone .'
+                withCredentials([string(credentialsId: 'tmdb-api-key', variable: 'TMDB_API_KEY')]) {
+                    sh 'docker build --build-arg TMDB_API_KEY=$TMDB_API_KEY -t netflix-clone .'
+                }
             }
         }
         stage('Deploy Locally') {
@@ -67,13 +67,10 @@ pipeline {
         }
         stage('Push to DockerHub') {
             when {
-                expression { params.RUN_&_PUSH_TO_DOCKERHUB }
+                expression { params.PUSH_TO_DOCKERHUB }
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
-                    sh 'docker stop netflix-app || true'
-                    sh 'docker rm netflix-app || true'
-                    sh 'docker run -itd -p 5000:5000 -e TMDB_API_KEY=$TMDB_API_KEY --name netflix-app netflix-clone'
                     sh 'docker tag netflix-clone namanss/netflix-clone:v${BUILD_NUMBER}'
                     sh 'docker tag netflix-clone namanss/netflix-clone:latest'
                     sh 'echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin'
