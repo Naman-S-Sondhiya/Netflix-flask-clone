@@ -1,18 +1,20 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: netflix-clone-ingress
+  name: netflix-app-ingress
   namespace: {{ .Values.namespace }}
-  annotations: {}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
-  - http:
+  - host: netflix.local
+    http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: netflix-clone
+            name: netflix-app
             port:
               number: 5000
