@@ -2,13 +2,12 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: netflix-clone-ingress
-  namespace: avaline
+  namespace: {{ .Values.namespace }}
   annotations: {}
 spec:
   ingressClassName: nginx
   rules:
-  - host: netflix.local
-    http:
+  - http:
       paths:
       - path: /
         pathType: Prefix
