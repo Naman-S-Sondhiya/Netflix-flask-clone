@@ -4,6 +4,10 @@ WORKDIR /app
 
 ADD . .
 
+ARG TMDB_API_KEY
+
+ENV TMDB_API_KEY=$TMDB_API_KEY
+
 RUN python -m venv venv 
 
 RUN venv/bin/pip install --upgrade pip
