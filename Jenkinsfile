@@ -90,6 +90,14 @@ pipeline {
         }
     }
     post {
+        always {
+            emailext (
+                subject: "Build ${currentBuild.result}: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Status: ${currentBuild.result}\nBuild: ${env.BUILD_NUMBER}\nURL: ${env.BUILD_URL}\n\nReports attached: GitLeaks, Trivy scans",
+                to: 'ssnaman4@gmail.com',
+                attachmentsPattern: 'gitleaks-report.json,trivyfs.txt,trivyimage.txt'
+            )
+        }
         success {
             echo 'Pipeline completed successfully!'
         }
