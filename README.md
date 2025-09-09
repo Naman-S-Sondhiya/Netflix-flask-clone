@@ -175,9 +175,19 @@ pipeline {
         SONAR_EV = tool 'Sonar'
     }
     stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
         stage('Clone Code from Github') {
             steps {
                 git url:"https://github.com/Naman-S-Sondhiya/Netflix-flask-clone.git", branch: "master_3"
+            }
+        }
+        stage('GitLeaks Scan') {
+            steps {
+                sh 'gitleaks detect --source . -r gitleaks-report.json -f json'
             }
         }
         stage('SonarQube Code Analysis') {
@@ -187,14 +197,10 @@ pipeline {
                 }
             }
         }
-        stage('GitLeaks Scan') {
-            steps {
-                sh 'gitleaks detect --source . -r gitleaks-report.json -f json'
-            }
-        }
         stage('OWASP Dependency Check') {
             steps {
                 dependencyCheck additionalArguments: "--scan ./ --format ALL", odcInstallation: 'owasp'
+                sh 'ls -lR . | tee owasp-scan-files.txt'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
@@ -207,7 +213,7 @@ pipeline {
         }
         stage('Trivy File Scan') {
             steps {
-                sh 'trivy fs --exit-code 1 --severity HIGH,CRITICAL --no-progress . || true'
+                sh 'trivy fs . > trivyfs.txt'
             }
         }
         stage('Build Docker Image') {
@@ -217,16 +223,19 @@ pipeline {
                 }
             }
         }
-        stage('Deploy Locally') {
+        stage('Trivy Image Scan') {
+            steps {
+                sh 'trivy image netflix-clone > trivyimage.txt'
+            }
+        }
+        stage('Deploy To Container') {
             when {
                 expression { params.LOCAL_DEPLOYMENT }
             }
             steps {
-                withCredentials([string(credentialsId: 'tmdb-api-key', variable: 'TMDB_API_KEY')]) {
-                    sh 'docker stop netflix-app || true'
-                    sh 'docker rm netflix-app || true'
-                    sh 'docker run -d -p 5000:5000 -e TMDB_API_KEY=$TMDB_API_KEY --name netflix-app netflix-clone'
-                }
+                sh 'docker stop netflix-app || true'
+                sh 'docker rm netflix-app || true'
+                sh 'docker run -d -p 5000:5000 --name netflix-app netflix-clone'
             }
         }
         stage('Push to DockerHub') {
@@ -244,11 +253,7 @@ pipeline {
             }
         }
     }
-
     post {
-        always {
-            cleanWs()
-        }
         success {
             echo 'Pipeline completed successfully!'
         }
@@ -317,10 +322,21 @@ helm uninstall netflix-clone -n avaline
 kubectl delete namespace avaline
 ```
 
+## 🚀 Phase 5: Monitoring Setup
+
+### Install Prometheus Node Exporter
+
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+kubectl create namespace prometheus-node-exporter
+helm install prometheus-node-exporter prometheus-community/prometheus-node-exporter --namespace prometheus-node-exporter
+```
+
 ## 📁 Project Structure
 
 ```
 Netflix-flask-clone/
+├── LICENSE             # Project license
 ├── app.py              # Flask application
 ├── Dockerfile          # Container configuration
 ├── Jenkinsfile         # CI/CD pipeline
@@ -328,8 +344,11 @@ Netflix-flask-clone/
 ├── kubernetes/         # Kubernetes Helm chart
 │   ├── Chart.yaml      # Helm chart metadata
 │   ├── values.yaml     # Helm values
-│   ├── templates/      # Kubernetes manifests
-│   └── charts/         # Sub-charts
+│   ├── charts/         # Sub-charts
+│   └── templates/      # Kubernetes manifests
+│       ├── app_deployment.yaml # Application deployment
+│       ├── node_expo_service.yaml # Node exporter service
+│       └── NOTES.txt   # Helm notes
 ├── static/             # CSS/JS assets
 │   ├── css/
 │   │   └── style.css   # Main stylesheet
@@ -393,3 +412,4 @@ sudo systemctl restart jenkins
 ---
 
 **Complete DevSecOps Pipeline Ready!** 🚀
+
