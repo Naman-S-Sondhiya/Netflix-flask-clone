@@ -21,6 +21,11 @@ pipeline {
                 git url:"https://github.com/Naman-S-Sondhiya/Netflix-flask-clone.git", branch: "master_3"
             }
         }
+        stage('GitLeaks Scan') {
+            steps {
+                sh 'gitleaks detect --source . -r gitleaks-report.json -f json'
+            }
+        }
         stage('SonarQube Code Analysis') {
             steps {
                 withSonarQubeEnv('Sonar') {
@@ -28,14 +33,10 @@ pipeline {
                 }
             }
         }
-        stage('GitLeaks Scan') {
-            steps {
-                sh 'gitleaks detect --source . -r gitleaks-report.json -f json'
-            }
-        }
         stage('OWASP Dependency Check') {
             steps {
                 dependencyCheck additionalArguments: "--scan ./ --format ALL", odcInstallation: 'owasp'
+                sh 'ls -lR . | tee owasp-scan-files.txt'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
@@ -88,7 +89,6 @@ pipeline {
             }
         }
     }
-    
     post {
         success {
             echo 'Pipeline completed successfully!'
