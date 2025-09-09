@@ -2,7 +2,7 @@
 # apiVersion: v1
 # metadata:
 #   name: node-exporter
-#   namespace: {{ .Values.2namepsace }}
+#   namespace: {{ .Values.othernamepsace }}
 # spec:
 #   selector:
 #       app: node-exporter
