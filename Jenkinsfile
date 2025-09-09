@@ -11,6 +11,11 @@ pipeline {
         SONAR_EV = tool 'Sonar'
     }
     stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
         stage('Clone Code from Github') {
             steps {
                 git url:"https://github.com/Naman-S-Sondhiya/Netflix-flask-clone.git", branch: "master_3"
@@ -30,7 +35,7 @@ pipeline {
         }
         stage('OWASP Dependency Check') {
             steps {
-                dependencyCheck additionalArguments: "--scan ./ --format ALL", odcInstallation: 'owasp'
+                dependencyCheck additionalArguments: "--scan ./", odcInstallation: 'owasp'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
@@ -43,7 +48,7 @@ pipeline {
         }
         stage('Trivy File Scan') {
             steps {
-                sh 'trivy fs --exit-code 1 --severity HIGH,CRITICAL --no-progress . || true'
+                sh 'trivy fs . > trivyfs.txt'
             }
         }
         stage('Build Docker Image') {
@@ -53,16 +58,19 @@ pipeline {
                 }
             }
         }
-        stage('Deploy Locally') {
+        stage('Trivy Image Scan') {
+            steps {
+                sh 'trivy image --exit-code 1 --no-progress netflix-clone > trivyimage.txt || true'
+            }
+        }
+        stage('Deploy To Container') {
             when {
                 expression { params.LOCAL_DEPLOYMENT }
             }
             steps {
-                withCredentials([string(credentialsId: 'tmdb-api-key', variable: 'TMDB_API_KEY')]) {
-                    sh 'docker stop netflix-app || true'
-                    sh 'docker rm netflix-app || true'
-                    sh 'docker run -d -p 5000:5000 -e TMDB_API_KEY=$TMDB_API_KEY --name netflix-app netflix-clone'
-                }
+                sh 'docker stop netflix-app || true'
+                sh 'docker rm netflix-app || true'
+                sh 'docker run -d -p 5000:5000 -e --name netflix-app netflix-clone'
             }
         }
         stage('Push to DockerHub') {
@@ -82,9 +90,6 @@ pipeline {
     }
     
     post {
-        always {
-            cleanWs()
-        }
         success {
             echo 'Pipeline completed successfully!'
         }

@@ -3,10 +3,13 @@ kind: Service
 metadata:
   name: netflix-app
   namespace: {{ .Values.namespace }}
+  labels:
+    app: netflix-app
 spec:
   selector:
     app: netflix-app
-  type: ClusterIP
+  type: NodePort
   ports:
   - port: 5000
     targetPort: 5000
+    nodePort: 30007
