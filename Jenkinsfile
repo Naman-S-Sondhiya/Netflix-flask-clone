@@ -35,7 +35,7 @@ pipeline {
         }
         stage('OWASP Dependency Check') {
             steps {
-                dependencyCheck additionalArguments: "--scan ./", odcInstallation: 'owasp'
+                dependencyCheck additionalArguments: "--scan ./ --format ALL", odcInstallation: 'owasp'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
@@ -70,7 +70,7 @@ pipeline {
             steps {
                 sh 'docker stop netflix-app || true'
                 sh 'docker rm netflix-app || true'
-                sh 'docker run -d -p 5000:5000 -e --name netflix-app netflix-clone'
+                sh 'docker run -d -p 5000:5000 --name netflix-app netflix-clone'
             }
         }
         stage('Push to DockerHub') {
