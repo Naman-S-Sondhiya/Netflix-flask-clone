@@ -61,7 +61,7 @@ pipeline {
         }
         stage('Trivy Image Scan') {
             steps {
-                sh 'trivy image --exit-code 1 --no-progress netflix-clone > trivyimage.txt || true'
+                sh 'trivy image netflix-clone > trivyimage.txt'
             }
         }
         stage('Deploy To Container') {
