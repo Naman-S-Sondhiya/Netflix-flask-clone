@@ -2,16 +2,17 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-ADD . .
+COPY requirements.txt .
+
+RUN python -m venv venv && \
+    venv/bin/pip install --upgrade pip && \
+    venv/bin/pip install -r requirements.txt
+
+COPY . .
 
 ARG TMDB_API_KEY
 
 ENV TMDB_API_KEY=$TMDB_API_KEY
-
-RUN python -m venv venv 
-
-RUN venv/bin/pip install --upgrade pip
-RUN venv/bin/pip install -r requirements.txt
 
 EXPOSE 5000
 
