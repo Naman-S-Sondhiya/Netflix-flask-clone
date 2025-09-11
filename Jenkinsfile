@@ -36,8 +36,8 @@ pipeline {
         stage('OWASP Dependency Check') {
             steps {
                 dependencyCheck additionalArguments: "--scan ./ --format XML", odcInstallation: 'owasp'
-                sh 'ls -lR . | tee owasp-scan-files.txt'
-                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+                sh 'ls -lhR . | grep dependency-check || true'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
         stage('Quality Gate') {
