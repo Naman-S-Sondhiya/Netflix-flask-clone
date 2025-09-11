@@ -37,7 +37,7 @@ pipeline {
             steps {
                 dependencyCheck additionalArguments: "--scan ./ --format ALL", odcInstallation: 'owasp'
                 sh 'ls -lR . | tee owasp-scan-files.txt'
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
         }
         stage('Quality Gate') {
