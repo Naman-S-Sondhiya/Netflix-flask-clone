@@ -18,7 +18,7 @@ pipeline {
         }
         stage('Clone Code from Github') {
             steps {
-                git url:"https://github.com/Naman-S-Sondhiya/Netflix-flask-clone.git", branch: "master_3"
+                git url:"https://github.com/Naman-S-Sondhiya/Netflix-flask-clone.git", branch: "tram"
             }
         }
         stage('GitLeaks Scan') {

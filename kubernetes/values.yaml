@@ -1,3 +1,2 @@
 namespace: avaline
-othernamespace: prometheus-node-exporter
 container: docker.io/namanss/netflix-clone:latest
